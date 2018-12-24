@@ -47,7 +47,7 @@ def _find_penultimate_layer(model, layer_idx, penultimate_layer_idx):
     return model.layers[penultimate_layer_idx]
 
 
-def visualize_saliency_with_losses(input_tensor, losses, seed_input, wrt_tensor=None, grad_modifier='absolute', keepdims=False):
+def visualize_saliency_with_losses(input_tensor, losses, seed_input, wrt_tensor=None, grad_modifier='absolute', keepdims=False, normalize=False):
     """Generates an attention heatmap over the `seed_input` by using positive gradients of `input_tensor`
     with respect to weighted `losses`.
 
@@ -81,7 +81,9 @@ def visualize_saliency_with_losses(input_tensor, losses, seed_input, wrt_tensor=
     if not keepdims:
         channel_idx = 1 if K.image_data_format() == 'channels_first' else -1
         grads = np.max(grads, axis=channel_idx)
-    return utils.normalize(grads)[0]
+    if normalize:
+        grads = utils.normalize(grads)[0]
+    return grads
 
 
 def visualize_saliency(model, layer_idx, filter_indices, seed_input, wrt_tensor=None,
